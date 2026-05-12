@@ -1,23 +1,44 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ForecastController;
-use App\Http\Controllers\SimulateController;
-use App\Http\Controllers\DateController;
+use App\Http\Controllers\StudyController;
+use Illuminate\Support\Facades\Route;
 
-// Public routes
-Route::get('/health', fn() => response()->json(['status' => 'healthy']));
-Route::get('/dates', [DateController::class, 'index']);
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
 
-// Auth routes
+// Health check
+Route::get('/health', function () {
+    return response()->json([
+        'status'  => 'ok',
+        'service' => 'Study Mission Control API',
+        'version' => '2.0.0',
+        'phase'   => 4,
+    ]);
+});
+
+// Static exam dates
+Route::get('/dates', [StudyController::class, 'dates']);
+
+// Auth routes (public)
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login',    [AuthController::class, 'login']);
 
-// Protected routes
+/*
+|--------------------------------------------------------------------------
+| Protected Routes (require Sanctum token)
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout',   [AuthController::class, 'logout']);
-    Route::get('/me',        [AuthController::class, 'me']);
-    Route::post('/forecast', [ForecastController::class, 'forecast']);
-    Route::post('/simulate', [SimulateController::class, 'simulate']);
+    // Auth management
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user',    [AuthController::class, 'me']);
+
+    // Core study endpoints
+    Route::post('/forecast', [StudyController::class, 'forecast']);
+    Route::post('/simulate', [StudyController::class, 'simulate']);
 });
