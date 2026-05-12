@@ -925,7 +925,7 @@ function PlannerView({appData}){
 }
 
 // ── Main Shell ─────────────────────────────────────────────
-function MainApp({appData,setAppData}){
+function MainApp({appData,setAppData,onLogout}){
   const [view,setView]=useState("dashboard");
   const nav=[
     {id:"dashboard",label:"Dashboard",icon:"🎯"},
@@ -986,6 +986,18 @@ function MainApp({appData,setAppData}){
               <span style={{color:x.c,fontFamily:T.mon,fontWeight:800,fontSize:16}}>{x.d}d</span>
             </div>
           ))}
+          {/* ── Logout Button ── */}
+          {onLogout&&(
+            <button onClick={onLogout} style={{
+              width:"100%",marginTop:10,padding:"8px 12px",borderRadius:8,
+              border:`1px solid ${T.red}55`,background:T.redD,
+              color:T.red,fontFamily:T.fnt,fontWeight:700,fontSize:13,
+              cursor:"pointer",display:"flex",alignItems:"center",
+              justifyContent:"center",gap:6,transition:"all 0.2s",
+            }}>
+              🚪 Logout
+            </button>
+          )}
         </div>
       </div>
       <div style={{flex:1,overflowY:"auto",padding:"28px 32px"}}>
@@ -999,10 +1011,10 @@ function MainApp({appData,setAppData}){
 }
 
 // ── Root ───────────────────────────────────────────────────
-export default function App(){
+export default function App({ authToken, authUser, onLogout }){
   const [done,setDone]=useState(false);
   const [data,setData]=useState(null);
   return done
-    ?<MainApp appData={data} setAppData={setData}/>
+    ?<MainApp appData={data} setAppData={setData} onLogout={onLogout}/>
     :<SetupWizard onComplete={d=>{setData(d);setDone(true);}}/>;
 }
