@@ -12,6 +12,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Disable CSRF verification for all /api/* routes
+        // The API uses Sanctum token-based auth, not cookie/session CSRF
+        $middleware->validateCsrfTokens(except: [
+            'api/*',
+        ]);
+
         $middleware->api(prepend: [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
         ]);
